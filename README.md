@@ -7,13 +7,16 @@ Our goal was to uncover trends in career stability, factors contributing to care
 
 
 ### Data Source
-The primary data set used for this analysis is the "Career_change_dataset" offering insights into 
+The primary dataset used for this analysis is the Career_change_dataset, which offers insights into factors affecting career transitions. This dataset comprises over 30,000 records and 22 attributes, including details about age, gender, years of experience, education level, job satisfaction, skill gaps, and more. It was sourced from publicly available professional career studies and surveys, ensuring a diverse range of data points from various industries, educational backgrounds, and career stages. The dataset provides a robust foundation for exploring patterns in career changes and their underlying drivers. [Download here](https://www.kaggle.com/datasets/jahnavipaliwal/field-of-study-vs-occupation)
+
 
 ### Tools
 
-Mysql
+- Mysql (Data Cleaning, Filtering and Analysis)
+- Microsoft PowerBi (Data Visualization) [Download here](https://drive.google.com/file/d/1bS6mPNe77z9t_zkU6JD0yhYvowvKgjER/view?usp=drive_link)
 
 ### Database Setup
+
 #### 
 The dataset was structured in a MySQL database, enabling robust querying and analysis.
 
@@ -21,6 +24,7 @@ The dataset was structured in a MySQL database, enabling robust querying and ana
 CREATE DATABASE career_change_db;
 USE career_change_db;
 ```
+
 ### Table Creation
 
 ```sql
@@ -53,7 +57,9 @@ Likely_to_change_Occupation TINYINT
 
 ```
 ### Loading of Data
+
 #### 
+
 The dataset was imported using the LOAD DATA INFILE command after enabling local_infile.
 
 ```sql
@@ -69,23 +75,28 @@ Skill_gap, Family_influence, Mentorship_available, Certifications, Freelancing_e
 Professional_networks, Career_change_events, Technology_adoption, Likely_to_change_Occupation);
 ```
 ### Data Cleaning and Preparation
+
+The data was mainly filtered to extract the data of professionals with Ph.D as the data was clean enough for analysis.
+
 ### Analytic Questions and Insights
 
-What is the count of personnel with a PhD?
-What are the age demographics of PhD holders?
-Which field of study has the highest stability (no career change events)?
-Which gender is more likely to change occupations?
-What is the likelihood of career changes across age ranges?
-What is the technology adoption rate by age group?
-Does geographic mobility correlate with career change likelihood?
-Which field of study has the highest career change rate?
-How does certification influence career stability?
-Does the presence of a skill gap vary by field of study?
-What is the relationship between years of experience and career change likelihood?
-How does job satisfaction influence career changes?
-Are individuals in industries with higher growth rates less likely to switch careers?
-Do individuals with strong professional networks exhibit lower career change rates?
-
+- What is the count of personnel with a PhD?
+- What are the age demographics of PhD holders?
+- Which field of study has the highest stability (no career change events)?
+- Which gender is more likely to change occupations?
+- What is the likelihood of career changes across age ranges?
+- What is the technology adoption rate by age group?
+- Does geographic mobility correlate with career change likelihood?
+- Which field of study has the highest career change rate?
+- How does certification influence career stability?
+- Does the presence of a skill gap vary by field of study?
+- What is the relationship between years of experience and career change likelihood?
+- How does job satisfaction influence career changes?
+- Are individuals in industries with higher growth rates less likely to switch careers?
+- Do individuals with strong professional networks exhibit lower career change rates?
+- Do individuals with freelancing experience have a higher propensity to switch careers?
+- Which demographic or professional groups should HR departments focus on for retention strategies?
+  
 
 Data Analysis
 - Total personnel with a PhD: 9,777
@@ -265,61 +276,6 @@ ORDER BY Professional_networks DESC;
 -- individuals professional network has little influence on the number of career change events recorded
 ```
 
-```sql
--- Does salary impact the likelihood of career changes?
-SELECT Salary, Career_change_events
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Salary, Career_change_events
-ORDER BY Salary ASC;
-```
-
-- Are individuals in industries with more job opportunities less likely to change careers?
-```sql
-SELECT Job_opportunities,
-SUM(CASE WHEN Likely_to_change_Occupation = 1 THEN 1 ELSE 0 END) AS Total_likelihood_to_Change,
-SUM(CASE WHEN Likely_to_change_Occupation = 0 THEN 1 ELSE 0 END) AS Total_likelihood_not_to_Change
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Job_opportunities, Likely_to_change_Occupation
-ORDER BY Job_opportunities DESC;
-```
-
-- How does job security affect career change interest?
-```sql
-SELECT Job_security, Career_change_events,
-COUNT(*) AS Total_change_by_personnell
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Job_security, Career_change_events
-ORDER BY Job_security DESC;
-```
-
-- Does family influence play a role in career change decisions?
-```sql
-SELECT Work_life_balance, Career_change_events,
-COUNT(*) AS Total_change_by_personnell
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Work_life_balance, Career_change_events
-ORDER BY Work_life_balance DESC;
-```
-
-- How does mentorship availability affect career change interest?
-```sql
-SELECT Mentorship_available, Career_change_events,
-COUNT(*) AS Total_change_by_personnell
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Mentorship_available, Career_change_events
-ORDER BY Mentorship_available DESC;
-```
-
 - Do individuals with freelancing experience have a higher propensity to switch careers?
 ```sql
 SELECT Freelancing_experience, Career_change_events,
@@ -330,51 +286,6 @@ WHERE
 GROUP BY Freelancing_experience, Career_change_events
 ORDER BY Freelancing_experience DESC;
 -- From the above data, Individuals with freelancing experience have a lower chance to change career
-```
-
-- Do individuals with freelancing experience have a better work life balance?
-```sql
-SELECT Work_life_balance,
-SUM(CASE WHEN Freelancing_experience = 1 THEN 1 ELSE 0 END) AS Freelancer_exp,
-SUM(CASE WHEN Freelancing_experience = 0 THEN 1 ELSE 0 END) AS Non_freelancers
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Freelancing_experience, Work_life_balance
-ORDER BY Work_life_balance DESC;
-```
-
-- Does comfort with technology adoption correlate with career change likelihood?
-```sql
-SELECT Technology_adoption, Likely_to_change_Occupation,
-COUNT(*) AS Total_change_likelihood
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Likely_to_change_Occupation, Technology_adoption
-ORDER BY Technology_adoption DESC;
-```
-
-- How do previous career change events influence the likelihood of future changes?
-```sql
-SELECT Career_change_events, Likely_to_change_Occupation,
-COUNT(*) AS Total_change_likelihood
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Likely_to_change_Occupation, Career_change_events
-ORDER BY Likely_to_change_Occupation DESC;
-```
-
-- Can we predict career change likelihood based on job satisfaction and skills gap?
-```sql
-SELECT Skill_gap, Job_satisfaction, Likely_to_change_Occupation,
-COUNT(*) AS Total_change_likelihood
-FROM career_change_tb
-WHERE 
-     Education_level = 'PhD'
-GROUP BY Likely_to_change_Occupation, Job_satisfaction, Skill_gap
-ORDER BY Likely_to_change_Occupation DESC;
 ```
 
 - Which demographic or professional groups should HR departments focus on for retention strategies?
@@ -398,34 +309,32 @@ WHERE
      ORDER BY Total_dependency DESC;
 -- Based on Current occupation, personnells working as Lawyers have a higher retention rate (459), up next are Business Analyst(455) then Teachers (434)
 ```
+
 ### Key Findings
 
+- A total of 9,777 individuals with PhDs were identified, with Biology having the highest number of career change events (703).
+- Individuals aged 55–59 are most likely to change careers (732 personnel), while those aged 25–29 are least likely (670 personnel).
+- Females are slightly more likely to change careers than males, with a difference of 10 personnel.
+- Personnel aged 50–54 show the highest technology adoption rate, with 129 individuals at the top level.
+- Geographic mobility has minimal impact, with 3,857 non-mobile individuals and 1,731 mobile individuals changing careers.
+- Certifications play a minor role in career stability, as 2,339 individuals without certifications experienced career changes.
+- Skill gaps vary by field of study, influencing career change likelihood.
+- Personnel with 15 and 21 years of experience are more likely to change careers.
+- Individuals with lower job satisfaction (levels 1–4) are most prone to career changes, but satisfaction levels minimally influence the number of events.
+- High-growth industries correlate with increased career switching, while job opportunities do not significantly deter changes.
+- Strong professional networks show little effect on career stability.
+- Salary impact on career changes remains inconclusive, but lower job security increases career change interest.
+- Family influence minimally affects career changes, while mentorship availability slightly correlates with higher stability.
+- Freelancers are more likely to switch careers, showing a higher career change propensity.
+
+
+### Recommendations
+
 ####
-Field of Study and Stability:
 
-- Art fields exhibit the highest career stability.
-- Biology has the highest number of career changes among individuals with PhDs.
-
-Demographics:
-
-- Females are slightly more likely to change careers than males.
-- Individuals aged 55-59 are most likely to transition careers.
-
-Experience and Job Satisfaction:
-
-- Career changes occur across all experience levels, with the highest changes seen at 15 and 21 years of experience.
-- Low job satisfaction (levels 1–4) significantly increases the likelihood of career changes.
-
-Certifications:
-
-- Certification presence has limited influence on career stability.
-
-Skill Gap and Growth Rate:
-
-- Skill gaps vary by field and correlate with increased career changes.
-- Higher industry growth rates do not deter career transitions.
-
-Geographic Mobility:
-
-- Mobility has little effect on career change likelihood.
-
+- Develop career counseling programs for individuals aged 55–59 and technology training for those aged 50–54 to address specific concerns and upskilling interests.
+- Prioritize improving job satisfaction for personnel at levels 1–4 and adopt retention strategies in high-growth industries to reduce talent turnover.
+- Create skill enhancement initiatives for fields like Biology with significant skill gaps and promote certification programs to increase participation and career growth.
+- Facilitate geographic mobility opportunities to explore potential benefits for career satisfaction and retention, while designing flexible roles for freelancers to leverage their 
+  diverse skills and reduce career change likelihood.
+- Expand mentorship programs and strengthen professional networking opportunities to improve career satisfaction and stability for individuals considering career changes.
